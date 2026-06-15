@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real Estate Chatbot — Complete Documentation</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface-2: #1a2234;
+      --surface-3: #222d42;
+      --border: #2a3550;
+      --border-light: #374565;
+      --teal: #00cec4;
+      --teal-dim: #009e96;
+      --teal-glow: rgba(0, 206, 196, 0.12);
+      --purple: #a78bfa;
+      --pink: #f472b6;
+      --amber: #fbbf24;
+      --red: #ef4444;
+      --green: #34d399;
+      --blue: #60a5fa;
+      --text-1: #e8edf4;
+      --text-2: #94a3b8;
+      --text-3: #64748b;
+      --font: "Inter", system-ui, sans-serif;
+      --mono: "JetBrains Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-1);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Sidebar Navigation ── */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 24px 0;
+      z-index: 50;
+    }
+
+    .sidebar-title {
+      padding: 0 20px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--teal);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .sidebar-group {
+      padding: 8px 0;
+    }
+
+    .sidebar-group-label {
+      padding: 6px 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-3);
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 6px 20px 6px 28px;
+      font-size: 13px;
+      color: var(--text-2);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar a:hover {
+      color: var(--text-1);
+      background: var(--surface-2);
+      border-left-color: var(--teal);
+    }
+
+    /* ── Main Content ── */
+    .main {
+      margin-left: 280px;
+      max-width: 920px;
+      padding: 48px 48px 120px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 48px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1.2;
+      background: linear-gradient(135deg, var(--teal), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-2);
+      max-width: 640px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-2);
+    }
+
+    .badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    /* ── Sections ── */
+    .part-divider {
+      margin: 56px 0 32px;
+      padding: 16px 0;
+      border-top: 2px solid var(--border);
+    }
+
+    .part-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+
+    .part-title {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 40px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      scroll-margin-top: 24px;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 28px 0 10px;
+      color: var(--teal);
+      scroll-margin-top: 24px;
+    }
+
+    h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 20px 0 8px;
+      color: var(--purple);
+    }
+
+    p {
+      margin-bottom: 12px;
+      color: var(--text-2);
+    }
+
+    strong { color: var(--text-1); }
+
+    /* ── Code ── */
+    pre {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 12px 0 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-1);
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--surface-2);
+      padding: 2px 7px;
+      border-radius: 5px;
+      color: var(--teal);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    .code-label {
+      display: inline-block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-3);
+    }
+
+    /* ── Info Boxes ── */
+    .info-box {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 16px 0;
+      border-left: 4px solid;
+    }
+
+    .info-box.theory {
+      background: rgba(167, 139, 250, 0.08);
+      border-color: var(--purple);
+    }
+
+    .info-box.theory .info-label { color: var(--purple); }
+
+    .info-box.important {
+      background: rgba(251, 191, 36, 0.08);
+      border-color: var(--amber);
+    }
+
+    .info-box.important .info-label { color: var(--amber); }
+
+    .info-box.example {
+      background: rgba(0, 206, 196, 0.06);
+      border-color: var(--teal);
+    }
+
+    .info-box.example .info-label { color: var(--teal); }
+
+    .info-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .info-box p { margin-bottom: 6px; }
+    .info-box p:last-child { margin-bottom: 0; }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 16px 0;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--surface-2);
+      font-weight: 700;
+      color: var(--text-1);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td { color: var(--text-2); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface-2); }
+
+    /* ── Lists ── */
+    ul, ol {
+      margin: 8px 0 16px 24px;
+      color: var(--text-2);
+    }
+
+    li { margin-bottom: 6px; }
+    li code { font-size: 12px; }
+
+    /* ── File Tree ── */
+    .file-tree {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-2);
+      margin: 12px 0 16px;
+    }
+
+    .file-tree .folder { color: var(--blue); font-weight: 600; }
+    .file-tree .file { color: var(--text-2); }
+    .file-tree .comment { color: var(--text-3); font-style: italic; }
+
+    /* ── Flow Diagram ── */
+    .flow-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .flow-num {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: var(--bg);
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flow-content {
+      flex: 1;
+      padding-top: 3px;
+    }
+
+    .flow-content strong { color: var(--text-1); }
+    .flow-content p { margin-bottom: 4px; font-size: 14px; }
+
+    .flow-arrow {
+      text-align: center;
+      color: var(--text-3);
+      font-size: 18px;
+      margin: 4px 0 4px 6px;
+    }
+
+    /* ── Endpoint Cards ── */
+    .endpoint {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .method-badge {
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .method-badge.get { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+    .method-badge.post { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
+
+    .endpoint-path {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-1);
+    }
+
+    .endpoint-desc { font-size: 14px; color: var(--text-2); margin-bottom: 10px; }
+
+    /* ── Diagram Box (ASCII) ── */
+    .diagram {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 16px 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre;
+      overflow-x: auto;
+      color: var(--text-2);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 24px 20px 80px; }
+      .hero h1 { font-size: 28px; }
+      pre { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- SIDEBAR NAVIGATION                                                     -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-title">Documentation</div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Overview</div>
+    <a href="#overview">Project Overview</a>
+    <a href="#structure">Project Structure</a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Foundational Theory</div>
+    <a href="#nodejs">Node.js</a>
+    <a href="#npm">npm</a>
+    <a href="#api">What is an API?</a>
+    <a href="#rest">REST Architecture</a>
+    <a href="#json">JSON Format</a>
+    <a href="#http">HTTP Protocol</a>
+    <a href="#env-vars">Environment Variables</a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Backend</div>
+    <a href="#express">Express.js</a>
+    <a href="#middleware">Middleware</a>
+    <a href="#cors">CORS</a>
+    <a href="#crash-handlers">Crash Handlers</a>
+    <a href="#data-loading">Property Data</a>
+    <a href="#ep-health">GET / (Health)</a>
+    <a href="#ep-properties">GET /properties</a>
+    <a href="#ep-search">POST /search</a>
+    <a href="#ep-compare">POST /compare</a>
+    <a href="#ep-chat">POST /chat (AI)</a>
+    <a href="#server-startup">Server Startup</a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Frontend</div>
+    <a href="#react">React.js</a>
+    <a href="#jsx">JSX</a>
+    <a href="#virtual-dom">Virtual DOM</a>
+    <a href="#hooks">React Hooks</a>
+    <a href="#comp-avatar">MiraAvatar</a>
+    <a href="#comp-typing">TypingIndicator</a>
+    <a href="#comp-message">MessageContent</a>
+    <a href="#comp-card">PropertyCard</a>
+    <a href="#comp-modal">ComparisonModal</a>
+    <a href="#chips">Quick Chips</a>
+    <a href="#app-state">App State</a>
+    <a href="#fn-send">sendMessage</a>
+    <a href="#fn-chip">runChipSearch</a>
+    <a href="#fn-compare">Compare Flow</a>
+    <a href="#layout">JSX Layout</a>
+    <a href="#css">CSS Architecture</a>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Architecture</div>
+    <a href="#data-flow">Complete Data Flow</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT                                                           -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <h1>Real Estate Chatbot<br/>Complete Documentation</h1>
+    <p>A full-stack AI-powered real estate search application built with React, Express, and Groq (Llama 3.3). Every concept, function, and data flow explained from scratch.</p>
+    <div class="badge-row">
+      <span class="badge"><span class="dot" style="background:var(--green)"></span> React 19</span>
+      <span class="badge"><span class="dot" style="background:var(--blue)"></span> Express 5</span>
+      <span class="badge"><span class="dot" style="background:var(--purple)"></span> Groq / Llama 3.3</span>
+      <span class="badge"><span class="dot" style="background:var(--amber)"></span> Node.js</span>
+      <span class="badge"><span class="dot" style="background:var(--pink)"></span> CSS3</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- PART 1: OVERVIEW                                                     -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <div class="part-label">Part 1</div>
+    <div class="part-title">Project Overview</div>
+  </div>
+
+  <h2 id="overview">What Is This Project?</h2>
+  <p>This is a <strong>full-stack web application</strong> &mdash; meaning it has two separate programs that work together:</p>
+  <ol>
+    <li><strong>Backend</strong> (server) &mdash; runs on your machine, handles data and AI logic</li>
+    <li><strong>Frontend</strong> (client) &mdash; runs in the user's browser, handles what people see and interact with</li>
+  </ol>
+  <p>The app lets users <strong>browse real estate properties</strong>, <strong>chat with an AI agent</strong> named Mira to search by filters (location, budget, bedrooms), and <strong>compare properties</strong> side by side.</p>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Full Stack</div>
+    <p>"Full stack" means the entire technology stack from the user's screen down to the server:</p>
+    <ul>
+      <li><strong>Frontend</strong> (the "front" the user sees) &mdash; HTML, CSS, JavaScript running in a browser</li>
+      <li><strong>Backend</strong> (the "back" the user never sees) &mdash; a server program handling data, logic, and external APIs</li>
+      <li><strong>Database</strong> (in this project: JSON files) &mdash; where the data lives</li>
+    </ul>
+    <p>The frontend and backend are <strong>separate programs</strong> running on <strong>different ports</strong> (3000 and 5000). They communicate over <strong>HTTP</strong>.</p>
+  </div>
+
+  <h2 id="structure">Project Structure</h2>
+  <div class="file-tree">
+<span class="folder">A:\real-estate-chatbot\</span>
+├── <span class="file">.env</span>                              <span class="comment">&larr; Secret keys (never commit to git)</span>
+├── <span class="file">start.bat</span>                         <span class="comment">&larr; Windows batch script to launch both</span>
+├── <span class="folder">backend/</span>
+│   ├── <span class="file">package.json</span>                  <span class="comment">&larr; Dependencies &amp; metadata</span>
+│   ├── <span class="file">server.js</span>                     <span class="comment">&larr; The entire backend (1 file)</span>
+│   └── <span class="folder">data/</span>
+│       ├── <span class="file">property_basics.json</span>      <span class="comment">&larr; id, title, price, location</span>
+│       ├── <span class="file">property_characteristics.json</span> <span class="comment">&larr; bedrooms, bathrooms, sqft, amenities</span>
+│       └── <span class="file">property_images.json</span>      <span class="comment">&larr; image URLs from Pexels</span>
+└── <span class="folder">frontend/</span>
+    ├── <span class="file">package.json</span>                  <span class="comment">&larr; Dependencies &amp; metadata</span>
+    └── <span class="folder">src/</span>
+        ├── <span class="file">App.js</span>                    <span class="comment">&larr; Entire React UI (1 file)</span>
+        ├── <span class="file">App.css</span>                   <span class="comment">&larr; All styling (730+ lines)</span>
+        └── <span class="file">index.js</span>                  <span class="comment">&larr; React entry point</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- PART 2: FOUNDATIONAL THEORY                                          -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <div class="part-label">Part 2</div>
+    <div class="part-title">Foundational Theory</div>
+  </div>
+
+  <h2 id="nodejs">Node.js</h2>
+  <p><strong>Node.js</strong> is a <strong>JavaScript runtime</strong> &mdash; it lets you run JavaScript outside the browser. Normally JavaScript only runs inside web browsers (Chrome, Firefox), but Node.js takes the V8 engine (Chrome's JS engine) and packages it as a standalone program.</p>
+
+  <div class="info-box theory">
+    <div class="info-label">Why It Matters</div>
+    <p>The backend is written in JavaScript. Without Node.js, JavaScript could only run in browsers &mdash; you couldn't build a server with it.</p>
+  </div>
+
+  <p><strong>Key Properties:</strong></p>
+  <ul>
+    <li><strong>Single-threaded</strong>: One thread handles all requests (unlike Java/C# which create a thread per request)</li>
+    <li><strong>Event-driven</strong>: Uses an "event loop" &mdash; instead of blocking while waiting for I/O, it registers a callback and moves on</li>
+    <li><strong>Non-blocking I/O</strong>: <code>fetch()</code>, file reads, database queries &mdash; none of these freeze the server</li>
+  </ul>
+
+  <h2 id="npm">npm (Node Package Manager)</h2>
+  <p><strong>npm</strong> is the package manager for Node.js. A "package" is a reusable library someone else wrote.</p>
+  <ul>
+    <li><code>package.json</code> &mdash; the manifest file. Lists what packages your project needs</li>
+    <li><code>node_modules/</code> &mdash; the folder where npm downloads all packages</li>
+    <li><code>npm install</code> &mdash; reads package.json and downloads everything</li>
+    <li><code>npm start</code> &mdash; runs the <code>start</code> script defined in package.json</li>
+  </ul>
+
+  <p>Our backend's dependencies:</p>
+  <table>
+    <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>express</code></td><td>^5.2.1</td><td>Web framework for building APIs</td></tr>
+      <tr><td><code>cors</code></td><td>^2.8.6</td><td>Cross-Origin Resource Sharing middleware</td></tr>
+      <tr><td><code>dotenv</code></td><td>^17.4.2</td><td>Loads .env files into process.env</td></tr>
+      <tr><td><code>axios</code></td><td>^1.17.0</td><td>HTTP client (installed but unused)</td></tr>
+    </tbody>
+  </table>
+  <p>The <code>^</code> means "compatible with" &mdash; <code>^5.2.1</code> means any version <code>&gt;=5.2.1</code> and <code>&lt;6.0.0</code>.</p>
+
+  <h2 id="api">What Is an API?</h2>
+  <p><strong>API</strong> = Application Programming Interface. It's a contract: "send me data in THIS format, and I'll send you back data in THAT format."</p>
+  <p>In our project, the backend exposes a <strong>REST API</strong> &mdash; the frontend sends HTTP requests to specific URLs (called "endpoints"), and the backend responds with JSON data.</p>
+
+  <div class="info-box example">
+    <div class="info-label">Example</div>
+    <pre><code>Frontend sends:    POST http://localhost:5000/search
+                   Body: { "location": "New York", "budget": 500000 }
+
+Backend responds:  [{ "id": 1, "title": "3 BHK Apartment...", ... },
+                    { "id": 6, "title": "Cozy Studio...", ... }]</code></pre>
+  </div>
+
+  <h2 id="rest">REST Architecture</h2>
+  <p><strong>REST</strong> (Representational State Transfer) is an architectural style for APIs.</p>
+  <table>
+    <thead><tr><th>Principle</th><th>Meaning</th><th>Our Project</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Resources</strong></td><td>Everything is a "resource" identified by a URL</td><td><code>/properties</code>, <code>/search</code>, <code>/chat</code>, <code>/compare</code></td></tr>
+      <tr><td><strong>HTTP Methods</strong></td><td>GET = read, POST = create/action</td><td>GET <code>/properties</code> reads all; POST <code>/search</code> performs a search</td></tr>
+      <tr><td><strong>Stateless</strong></td><td>Each request contains ALL info needed</td><td>Every <code>/chat</code> call sends the full message</td></tr>
+      <tr><td><strong>JSON</strong></td><td>Data exchanged in JSON format</td><td>Every response is <code>res.json(...)</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="json">JSON Format</h2>
+  <p><strong>JSON</strong> (JavaScript Object Notation) is a text format for structured data. It's universal &mdash; every programming language can read/write it.</p>
+  <pre><code>{
+  "id": 1,
+  "title": "3 BHK Apartment in Downtown",
+  "price": 450000,
+  "amenities": ["Gym", "Swimming Pool", "Parking"]
+}</code></pre>
+  <p><strong>Rules:</strong> keys must be double-quoted; values can be strings, numbers, booleans, null, arrays, or objects; no trailing commas; no comments.</p>
+  <ul>
+    <li><code>JSON.parse(text)</code> &mdash; converts a JSON string into a JavaScript object</li>
+    <li><code>JSON.stringify(obj)</code> &mdash; converts a JavaScript object into a JSON string</li>
+  </ul>
+
+  <h2 id="http">HTTP Protocol</h2>
+  <p><strong>HTTP</strong> (HyperText Transfer Protocol) is how browsers and servers communicate. Every web page load, every API call &mdash; it's all HTTP.</p>
+
+  <h4>HTTP Request</h4>
+  <ul>
+    <li><strong>Method</strong>: GET (read), POST (send data), PUT (update), DELETE (remove)</li>
+    <li><strong>URL</strong>: <code>/search</code>, <code>/chat</code>, etc.</li>
+    <li><strong>Headers</strong>: Metadata like <code>Content-Type: application/json</code></li>
+    <li><strong>Body</strong>: The actual data (for POST/PUT)</li>
+  </ul>
+
+  <h4>HTTP Response</h4>
+  <ul>
+    <li><strong>Status Code</strong>: 200 (OK), 400 (bad request), 404 (not found), 500 (server error), 502 (bad gateway)</li>
+    <li><strong>Headers</strong>: Metadata</li>
+    <li><strong>Body</strong>: The response data (usually JSON for APIs)</li>
+  </ul>
+
+  <h2 id="env-vars">Environment Variables</h2>
+  <p><strong>Environment variables</strong> are key-value pairs that exist in the operating system's environment. Used to store <strong>secrets</strong> (API keys) and <strong>configuration</strong>.</p>
+  <pre><code>GROQ_API_KEY=gsk_migfHREZss2NtMlwwMop...</code></pre>
+
+  <div class="info-box important">
+    <div class="info-label">Why Not Hardcode?</div>
+    <p><strong>Security</strong>: If you push code to GitHub with a key in it, anyone can steal it.</p>
+    <p><strong>Flexibility</strong>: Different keys for dev/staging/production environments.</p>
+    <p><strong>Separation</strong>: Code is logic; config is data. They change for different reasons.</p>
+  </div>
+
+  <p>The <strong>dotenv</strong> library reads a <code>.env</code> file and loads each line into <code>process.env</code>:</p>
+  <pre><code>require("dotenv").config({ path: ".env" });
+console.log(process.env.GROQ_API_KEY); // "gsk_migfHREZss2NtMlwwMop..."</code></pre>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- PART 3: BACKEND                                                      -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <div class="part-label">Part 3</div>
+    <div class="part-title">Backend (server.js &mdash; Port 5000)</div>
+  </div>
+
+  <h2 id="express">Express.js</h2>
+  <p><strong>Express</strong> is a <strong>web framework</strong> for Node.js. It wraps Node's raw HTTP module with a cleaner API for routing, middleware, and request/response helpers.</p>
+  <pre><code>const express = require("express");
+const app = express();   // creates an Express application instance</code></pre>
+  <p><code>app</code> is the core object. You attach routes and middleware to it, then tell it to listen on a port.</p>
+
+  <h2 id="middleware">Middleware</h2>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; What Is Middleware?</div>
+    <p><strong>Middleware</strong> is a function that sits between the incoming request and your route handler. It can read/modify the request, read/modify the response, end the request, or pass control to the next middleware via <code>next()</code>.</p>
+    <p>Middleware runs <strong>in order</strong> &mdash; the order you call <code>app.use()</code> matters.</p>
+  </div>
+
+  <div class="flow-box">
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>Request arrives</strong></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>app.use(cors())</strong><p>Adds CORS headers to the response</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>app.use(express.json())</strong><p>Parses JSON body &rarr; populates <code>req.body</code></p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>Request Logger</strong><p>Prints <code>[1:03:32 AM] POST /search</code> to console</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong>Route Handler</strong><p>Your <code>app.post("/search", ...)</code> function runs</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><strong>Response sent back</strong></div></div>
+  </div>
+
+  <h3>express.json() &mdash; Body Parsing</h3>
+  <p>When the frontend sends JSON in a POST request, the raw HTTP body is just a string. <code>express.json()</code> automatically parses it into a JavaScript object and puts it on <code>req.body</code>.</p>
+
+  <h3>Request Logger</h3>
+  <pre><code>app.use((req, res, next) =&gt; {
+  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+  next();  // MUST call next() or the request hangs forever
+});</code></pre>
+  <p><code>next()</code> passes control to the next middleware/handler. If you forget it, the request never reaches your route.</p>
+
+  <h2 id="cors">CORS (Cross-Origin Resource Sharing)</h2>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; The Same-Origin Policy</div>
+    <p>Browsers block JavaScript from making requests to a different "origin" (protocol + domain + port). This prevents malicious websites from calling your bank's API using your cookies.</p>
+    <p>Our frontend (<code>localhost:3000</code>) and backend (<code>localhost:5000</code>) are <strong>different origins</strong>. Without CORS, the browser would BLOCK every <code>fetch()</code> call.</p>
+  </div>
+
+  <p><code>app.use(cors())</code> adds these response headers, telling the browser "allow it":</p>
+  <pre><code>Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization</code></pre>
+
+  <h2 id="crash-handlers">Crash Handlers</h2>
+  <pre><code>process.on("uncaughtException", (err) =&gt; { ... });
+process.on("unhandledRejection", (reason) =&gt; { ... });</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Exceptions &amp; Promises</div>
+    <p>An <strong>exception</strong> is an error that interrupts normal code flow. If nothing catches it (<code>try/catch</code>), it becomes "uncaught" and Node.js terminates the process.</p>
+    <p>A <strong>Promise</strong> represents an async operation. If it rejects and nobody handles it (<code>.catch()</code>), that's an "unhandled rejection." These handlers are a safety net &mdash; they log errors instead of silently crashing.</p>
+  </div>
+
+  <h2 id="data-loading">Property Data &mdash; The Merge Operation</h2>
+  <p>Three JSON files are loaded and merged into one array on server startup:</p>
+  <table>
+    <thead><tr><th>File</th><th>Fields</th></tr></thead>
+    <tbody>
+      <tr><td><code>property_basics.json</code></td><td>id, title, price, location</td></tr>
+      <tr><td><code>property_characteristics.json</code></td><td>id, bedrooms, bathrooms, size_sqft, amenities</td></tr>
+      <tr><td><code>property_images.json</code></td><td>id, image_url</td></tr>
+    </tbody>
+  </table>
+
+  <pre><code>const merged = basics.map((property) =&gt; {
+  const detail = chars.find(item =&gt; item.id === property.id);
+  const image  = images.find(item =&gt; item.id === property.id);
+  return { ...property, ...(detail || {}), ...(image || {}) };
+});</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Key Operations</div>
+    <p><strong><code>.map()</code></strong> &mdash; creates a new array by transforming each element.</p>
+    <p><strong><code>.find()</code></strong> &mdash; returns the FIRST element matching a condition.</p>
+    <p><strong>Spread operator (<code>...</code>)</strong> &mdash; unpacks an object's properties into a new object.</p>
+    <p><strong><code>(detail || {})</code></strong> &mdash; if <code>detail</code> is undefined, use empty object (prevents crash).</p>
+    <p>This is equivalent to a SQL <code>LEFT JOIN</code> across three tables.</p>
+  </div>
+
+  <p><strong>Result:</strong> <code>merged</code> is an array of 10 property objects, each with all fields: <code>id, title, price, location, bedrooms, bathrooms, size_sqft, amenities, image_url</code>.</p>
+
+  <!-- ── Endpoints ── -->
+  <h2 id="ep-health">Endpoint: GET /</h2>
+  <div class="endpoint">
+    <div class="endpoint-header">
+      <span class="method-badge get">GET</span>
+      <span class="endpoint-path">/</span>
+    </div>
+    <div class="endpoint-desc">Health check &mdash; confirms the server is alive and keys are loaded.</div>
+    <pre><code>Response: { "status": "running", "properties": 10, "groq": true }</code></pre>
+    <p><code>!!</code> (double negation) converts any value to a boolean: <code>!!"gsk_abc..."</code> &rarr; <code>true</code>. Hides the actual key.</p>
+  </div>
+
+  <h2 id="ep-properties">Endpoint: GET /properties</h2>
+  <div class="endpoint">
+    <div class="endpoint-header">
+      <span class="method-badge get">GET</span>
+      <span class="endpoint-path">/properties</span>
+    </div>
+    <div class="endpoint-desc">Returns the entire <code>merged</code> array (all 10 properties). Called once on frontend page load.</div>
+    <pre><code>Response: [ { id: 1, title: "3 BHK...", price: 450000, ... }, ... ]</code></pre>
+  </div>
+
+  <h2 id="ep-search">Endpoint: POST /search</h2>
+  <div class="endpoint">
+    <div class="endpoint-header">
+      <span class="method-badge post">POST</span>
+      <span class="endpoint-path">/search</span>
+    </div>
+    <div class="endpoint-desc">Filters properties by location, budget, and/or bedrooms.</div>
+    <pre><code>Request:  { "location": "New York", "budget": 500000, "bedrooms": 3 }
+Response: [ ...matching properties ]</code></pre>
+  </div>
+
+  <p><strong>The filter logic:</strong></p>
+  <pre><code>const result = merged.filter(home =&gt; {
+  return (
+    (!location || home.location?.toLowerCase().includes(location.toLowerCase()))
+    &amp;&amp;
+    (!budget || Number(home.price) &lt;= Number(budget))
+    &amp;&amp;
+    (!bedrooms || Number(home.bedrooms) &gt;= Number(bedrooms))
+  );
+});</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Filter Pattern</div>
+    <p>Each condition uses the pattern <code>(!filter || check)</code>:</p>
+    <ul>
+      <li>If the filter is null/empty &rarr; <code>!filter</code> is <code>true</code> &rarr; condition passes (skip this filter)</li>
+      <li>If the filter has a value &rarr; evaluate the check</li>
+    </ul>
+    <p>This is <strong>short-circuit evaluation</strong> using the OR (<code>||</code>) operator.</p>
+    <p><strong><code>?.</code> (Optional chaining)</strong> &mdash; if <code>home.location</code> is null, return <code>undefined</code> instead of crashing.</p>
+    <p><strong><code>.includes()</code></strong> &mdash; checks if one string contains another: <code>"New York, NY".includes("New York")</code> &rarr; <code>true</code>.</p>
+  </div>
+
+  <h2 id="ep-compare">Endpoint: POST /compare</h2>
+  <div class="endpoint">
+    <div class="endpoint-header">
+      <span class="method-badge post">POST</span>
+      <span class="endpoint-path">/compare</span>
+    </div>
+    <div class="endpoint-desc">Compares 2&ndash;4 properties and identifies winners per category.</div>
+    <pre><code>Request:  { "ids": [1, 2, 3] }
+Response: {
+  "properties": [ ...full data for each ],
+  "highlights": {
+    "cheapest": 2, "largest": 3, "mostBedrooms": 3,
+    "mostBathrooms": 3, "mostAmenities": 1, "bestValue": 1
+  }
+}</code></pre>
+  </div>
+
+  <p><strong>Validation (defensive programming):</strong></p>
+  <ul>
+    <li><code>Array.isArray(ids)</code> &mdash; checks if the value is truly an array</li>
+    <li>Must have 2&ndash;4 ids; each must match an existing property</li>
+    <li>Returns 400 or 404 errors for invalid input</li>
+  </ul>
+
+  <p><strong>Highlights calculation:</strong></p>
+  <pre><code>const indexOfMin = arr =&gt; arr.indexOf(Math.min(...arr.filter(v =&gt; v &gt; 0)));
+const indexOfMax = arr =&gt; arr.indexOf(Math.max(...arr));</code></pre>
+
+  <div class="info-box example">
+    <div class="info-label">Step-by-step for "cheapest"</div>
+    <p>Prices = <code>[450000, 380000, 850000]</code></p>
+    <p>1. <code>filter(v &gt; 0)</code> &rarr; <code>[450000, 380000, 850000]</code></p>
+    <p>2. <code>Math.min(...)</code> &rarr; <code>380000</code></p>
+    <p>3. <code>indexOf(380000)</code> &rarr; <code>1</code></p>
+    <p>4. <code>selected[1].id</code> &rarr; <code>2</code> (property 2 is cheapest)</p>
+  </div>
+
+  <h2 id="ep-chat">Endpoint: POST /chat (AI Conversation)</h2>
+  <div class="endpoint">
+    <div class="endpoint-header">
+      <span class="method-badge post">POST</span>
+      <span class="endpoint-path">/chat</span>
+    </div>
+    <div class="endpoint-desc">The core AI feature &mdash; sends user message to Groq LLM, returns structured JSON with intent parsing.</div>
+    <pre><code>Request:  { "message": "3 bedroom homes in Austin under 400k" }
+Response: {
+  "success": true,
+  "isSearch": true,
+  "location": "Austin",
+  "budget": 400000,
+  "bedrooms": 3,
+  "reply": "I found properties matching your criteria..."
+}</code></pre>
+  </div>
+
+  <h3>What Is an LLM?</h3>
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Large Language Models</div>
+    <p>A <strong>Large Language Model</strong> (LLM) is a neural network trained on massive amounts of text data. It predicts "what text should come next" given some input. Modern LLMs can understand natural language, follow instructions, and generate structured output like JSON.</p>
+  </div>
+
+  <h3>What Is Groq?</h3>
+  <p><strong>Groq</strong> is an AI inference provider with custom hardware (LPUs) that runs LLM models extremely fast. The model used is <strong>Llama 3.3 70B</strong> &mdash; Meta's open-source model with 70 billion parameters. Groq provides an <strong>OpenAI-compatible API</strong>.</p>
+
+  <h3>System Prompt &mdash; Context Injection</h3>
+  <p>LLM APIs use a <strong>messages</strong> format with roles:</p>
+  <table>
+    <thead><tr><th>Role</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>system</code></td><td>Sets the AI's persona, rules, and context (the "instructions")</td></tr>
+      <tr><td><code>user</code></td><td>The human's message</td></tr>
+      <tr><td><code>assistant</code></td><td>The AI's response (for multi-turn conversations)</td></tr>
+    </tbody>
+  </table>
+  <p>Our system prompt injects the <strong>entire property database</strong> as context, then instructs the LLM to return a specific JSON schema. This is called <strong>in-context learning</strong>.</p>
+
+  <h3>API Call Parameters</h3>
+  <pre><code>const groqRes = await fetch(GROQ_API_URL, {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    model: GROQ_MODEL,
+    response_format: { type: "json_object" },
+    temperature: 0.4,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user",   content: message }
+    ]
+  })
+});</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Key Parameters</div>
+    <p><strong><code>response_format: { type: "json_object" }</code></strong> &mdash; forces the model to output valid JSON.</p>
+    <p><strong><code>temperature: 0.4</code></strong> &mdash; controls randomness. 0 = deterministic, 1 = creative. 0.4 is reliable for structured tasks.</p>
+    <p><strong><code>Bearer</code> authentication</strong> &mdash; standard HTTP auth scheme. The API checks this token to verify authorization.</p>
+    <p><strong><code>await</code></strong> &mdash; pauses execution until the Promise resolves. Can only be used inside <code>async</code> functions.</p>
+    <p><strong><code>fetch()</code></strong> &mdash; built-in function (Node.js 18+) for making HTTP requests. Returns a Promise.</p>
+  </div>
+
+  <h3>Response Parsing</h3>
+  <pre><code>const groqJson     = await groqRes.json();
+const responseText = groqJson.choices?.[0]?.message?.content ?? "";
+responseData = JSON.parse(responseText);</code></pre>
+  <p>Groq returns: <code>{ choices: [{ message: { content: '{"isSearch":true,...}' } }] }</code>. We extract and parse the JSON string. If parsing fails, we fall back to using the raw text as a plain reply.</p>
+
+  <h3>Error Status Codes</h3>
+  <table>
+    <thead><tr><th>Code</th><th>Meaning</th><th>When Used</th></tr></thead>
+    <tbody>
+      <tr><td><code>200</code></td><td>OK</td><td>Successful response</td></tr>
+      <tr><td><code>400</code></td><td>Bad Request</td><td>Missing message</td></tr>
+      <tr><td><code>500</code></td><td>Internal Server Error</td><td>Code crashed</td></tr>
+      <tr><td><code>502</code></td><td>Bad Gateway</td><td>Groq API returned an error</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="server-startup">Server Startup</h2>
+  <pre><code>const PORT = 5000;
+app.listen(PORT, () =&gt; {
+  console.log(`Server running on port ${PORT}`);
+});</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Ports</div>
+    <p>A <strong>port</strong> is a number (0&ndash;65535) that identifies a specific program on a machine. Port 5000 = our backend, Port 3000 = our frontend, Port 80 = standard HTTP, Port 443 = standard HTTPS.</p>
+    <p><code>app.listen(5000)</code> tells Express to start accepting connections. The callback fires once the server is ready.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- PART 4: FRONTEND                                                     -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <div class="part-label">Part 4</div>
+    <div class="part-title">Frontend (App.js &mdash; Port 3000)</div>
+  </div>
+
+  <h2 id="react">React.js</h2>
+  <p><strong>React</strong> is a JavaScript library for building user interfaces, created by Facebook (Meta). Its core idea: your UI is a <strong>function of your state</strong>.</p>
+  <pre><code>UI = f(state)</code></pre>
+  <p>When state changes &rarr; React re-renders &rarr; DOM updates automatically.</p>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Key React Concepts</div>
+    <p><strong>Components</strong> &mdash; reusable UI building blocks (functions that return JSX)</p>
+    <p><strong>Props</strong> &mdash; data passed from parent to child (read-only)</p>
+    <p><strong>State</strong> &mdash; data owned by a component that can change over time</p>
+    <p><strong>Hooks</strong> &mdash; functions that let you "hook into" React features (<code>useState</code>, <code>useEffect</code>, etc.)</p>
+  </div>
+
+  <h2 id="jsx">JSX (JavaScript XML)</h2>
+  <p>JSX looks like HTML but is actually JavaScript. It gets compiled into <code>React.createElement()</code> calls.</p>
+  <pre><code>&lt;div className="card"&gt;
+  &lt;h3&gt;{property.title}&lt;/h3&gt;
+  &lt;p&gt;Price: {USD.format(property.price)}&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+  <p><strong>Key differences from HTML:</strong></p>
+  <ul>
+    <li><code>className</code> instead of <code>class</code> (reserved word in JavaScript)</li>
+    <li><code>{}</code> curly braces = JavaScript expressions inside JSX</li>
+    <li><code>onClick</code> instead of <code>onclick</code> (camelCase)</li>
+    <li>Self-closing tags required: <code>&lt;img /&gt;</code> not <code>&lt;img&gt;</code></li>
+  </ul>
+
+  <h2 id="virtual-dom">Virtual DOM</h2>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; How React Updates the Page</div>
+    <p>React doesn't directly modify the browser's DOM. It maintains a <strong>virtual DOM</strong> &mdash; a lightweight JavaScript copy of the actual DOM tree.</p>
+    <p>When state changes:</p>
+    <ol>
+      <li>React creates a <strong>new</strong> virtual DOM tree</li>
+      <li>It <strong>diffs</strong> the new tree against the old one</li>
+      <li>It calculates the <strong>minimum set of changes</strong> needed</li>
+      <li>It applies only those changes to the real DOM</li>
+    </ol>
+    <p>This is called <strong>reconciliation</strong> &mdash; it's why React is fast even with frequent updates.</p>
+  </div>
+
+  <h2 id="hooks">React Hooks</h2>
+
+  <h3>useState &mdash; State Management</h3>
+  <pre><code>const [input, setInput] = useState("");</code></pre>
+  <ul>
+    <li><code>useState("")</code> creates a state variable with initial value <code>""</code></li>
+    <li>Returns <code>[currentValue, setterFunction]</code></li>
+    <li><code>setInput("hello")</code> updates the value AND triggers a re-render</li>
+    <li><strong>Immutable</strong>: never mutate state directly &mdash; always use the setter</li>
+  </ul>
+
+  <div class="info-box important">
+    <div class="info-label">Why Not Mutate Directly?</div>
+    <p>React doesn't "watch" your variables. It only re-renders when you call the setter. <code>input = "hello"</code> changes the variable but React never knows &mdash; the UI stays stale.</p>
+  </div>
+
+  <p><strong>Functional updates</strong> (when new state depends on old state):</p>
+  <pre><code>setCompareIds((prev) =&gt; [...prev, id]);</code></pre>
+  <p>Guarantees you're working with the latest value (important with rapid updates).</p>
+
+  <h3>useEffect &mdash; Side Effects</h3>
+  <pre><code>useEffect(() =&gt; {
+  fetch(`${BACKEND_URL}/properties`)
+    .then(r =&gt; r.json())
+    .then(data =&gt; { ... });
+}, []);</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Side Effects</div>
+    <p>A <strong>side effect</strong> is anything that interacts with the outside world: API calls, DOM manipulation, timers. React components should be "pure," so side effects go in <code>useEffect</code>.</p>
+    <p><strong>Dependency array:</strong></p>
+    <ul>
+      <li><code>[]</code> (empty) = run once after first render</li>
+      <li><code>[messages, thinking]</code> = run when those values change</li>
+      <li>No array = run after EVERY render (usually a mistake)</li>
+    </ul>
+  </div>
+
+  <h3>useRef &mdash; Persistent References</h3>
+  <pre><code>const bottomRef = useRef(null);
+const inputRef = useRef(null);</code></pre>
+  <p>A ref is a mutable container that <strong>persists across renders</strong> without causing re-renders. Used for DOM references (<code>&lt;div ref={bottomRef} /&gt;</code>) &mdash; <code>bottomRef.current</code> gives you the actual DOM element for <code>scrollIntoView()</code> and <code>focus()</code>.</p>
+
+  <h3>useCallback &mdash; Memoized Functions</h3>
+  <pre><code>const sendMessage = useCallback(async (text) =&gt; { ... }, [input, loading, allProperties, addMessage]);</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Why Memoize?</div>
+    <p>Every React render creates new function instances. Passing <code>onClick={handleClick}</code> to a child means the child sees a "new" function each render and re-renders unnecessarily.</p>
+    <p><code>useCallback</code> returns the same function instance unless the dependency values change &mdash; preventing unnecessary child re-renders.</p>
+  </div>
+
+  <!-- ── Components ── -->
+  <h2 id="comp-avatar">Component: MiraAvatar</h2>
+  <pre><code>function MiraAvatar({ size = 36, pulse = false }) { ... }</code></pre>
+  <p>Renders an <strong>SVG</strong> circle with a teal gradient and an "M" letter. The <code>pulse</code> prop adds a pulsing animation ring (used in the header). Used at 42px (header), 32px (chat header), 28px (messages).</p>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Props &amp; Default Values</div>
+    <p><strong>Props</strong> are data passed from parent to child. They're read-only.</p>
+    <p><code>{ size = 36 }</code> is <strong>destructuring with defaults</strong> &mdash; if no <code>size</code> is passed, it defaults to 36.</p>
+    <p><strong>SVG</strong> (Scalable Vector Graphics) uses math (shapes, paths, gradients) &mdash; scales infinitely without losing quality.</p>
+  </div>
+
+  <h2 id="comp-typing">Component: TypingIndicator</h2>
+  <p>Shows three animated bouncing dots while waiting for the AI response. Rendered when <code>thinking</code> state is <code>true</code>.</p>
+
+  <h2 id="comp-message">Component: MessageContent</h2>
+  <pre><code>function MessageContent({ content }) {
+  return (
+    &lt;span&gt;
+      {content.split("\n").map((line, li) =&gt; (
+        &lt;span key={li}&gt;
+          {li &gt; 0 &amp;&amp; &lt;br /&gt;}
+          {line.split(/\*\*(.*?)\*\*/g).map((part, i) =&gt;
+            i % 2 === 1 ? &lt;strong key={i}&gt;{part}&lt;/strong&gt; : part
+          )}
+        &lt;/span&gt;
+      ))}
+    &lt;/span&gt;
+  );
+}</code></pre>
+
+  <p>A <strong>mini Markdown parser</strong> that handles:</p>
+  <ol>
+    <li><strong>Newlines:</strong> splits on <code>\n</code>, inserts <code>&lt;br /&gt;</code></li>
+    <li><strong>Bold:</strong> splits on <code>**...**</code> using regex, wraps in <code>&lt;strong&gt;</code></li>
+  </ol>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Regular Expressions</div>
+    <p><code>/\*\*(.*?)\*\*/g</code> means:</p>
+    <ul>
+      <li><code>\*\*</code> &mdash; literal <code>**</code> (backslash escapes)</li>
+      <li><code>(.*?)</code> &mdash; capture group, non-greedy (stop at first <code>**</code>)</li>
+      <li><code>g</code> &mdash; global flag (find all matches)</li>
+    </ul>
+    <p>For <code>"I found **3 properties** in **Austin**"</code>, <code>.split()</code> produces: <code>["I found ", "3 properties", " in ", "Austin", ""]</code> &mdash; odd indices are bold.</p>
+  </div>
+
+  <h2 id="comp-card">Component: PropertyCard</h2>
+  <p>Renders a single property listing card with image, price badge, compare toggle, stats, amenity pills, and a View Details button.</p>
+
+  <table>
+    <thead><tr><th>Prop</th><th>Type</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>property</code></td><td>Object</td><td>The property data (title, price, bedrooms, etc.)</td></tr>
+      <tr><td><code>index</code></td><td>Number</td><td>Position in grid (for stagger animation)</td></tr>
+      <tr><td><code>selected</code></td><td>Boolean</td><td>Is this property in the compare list?</td></tr>
+      <tr><td><code>onToggleCompare</code></td><td>Function</td><td>Called when checkbox changes</td></tr>
+      <tr><td><code>disabled</code></td><td>Boolean</td><td>Has user hit the 4-property cap?</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Image error handling:</strong></p>
+  <pre><code>const [imgErr, setImgErr] = useState(false);
+&lt;img src={imgErr ? "placeholder" : property.image_url}
+     onError={() =&gt; setImgErr(true)} /&gt;</code></pre>
+  <p>If the image URL is broken (404), <code>onError</code> fires &rarr; shows placeholder. <code>loading="lazy"</code> defers loading until the image scrolls into view.</p>
+
+  <p><strong>Intl.NumberFormat:</strong></p>
+  <pre><code>const USD = new Intl.NumberFormat("en-US", {
+  style: "currency", currency: "USD", maximumFractionDigits: 0
+});
+USD.format(450000) // &rarr; "$450,000"</code></pre>
+  <p>Built-in JavaScript internationalization API for locale-aware number formatting.</p>
+
+  <h2 id="comp-modal">Component: ComparisonModal</h2>
+  <pre><code>function ComparisonModal({ data, onClose }) {
+  if (!data) return null;   // render nothing when not active
+  ...
+}</code></pre>
+
+  <p><strong>Key mechanisms:</strong></p>
+  <ul>
+    <li><strong>Conditional rendering:</strong> returns <code>null</code> when <code>data</code> is null (modal hidden)</li>
+    <li><strong>Overlay click-to-close:</strong> clicking the dark overlay calls <code>onClose</code></li>
+    <li><strong><code>e.stopPropagation()</code>:</strong> clicking inside the modal prevents the overlay's click from firing (event bubbling)</li>
+    <li><strong>Data-driven rows:</strong> comparison rows are defined as config objects &mdash; adding a new row means adding one object</li>
+  </ul>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Event Propagation</div>
+    <p>When you click an element, the click event "bubbles" up to parent elements. Clicking the modal content would also trigger the overlay's <code>onClick</code>. <code>stopPropagation()</code> stops the event from reaching the parent.</p>
+  </div>
+
+  <p><strong>Winner detection:</strong></p>
+  <pre><code>const isWinner = (id, key) =&gt; highlights[key] === id;</code></pre>
+  <p>Checks if a property's id matches the winner id for that category. Winners get a teal background and a badge like "LOWEST PRICE".</p>
+
+  <h2 id="chips">Quick Suggestion Chips</h2>
+  <pre><code>const CHIPS = [
+  { label: "Homes in New York", icon: "🏙️", filters: { location: "New York" } },
+  { label: "Under $500,000",    icon: "💰", filters: { budget: 500000 } },
+  { label: "3+ bedrooms",       icon: "🛏️", filters: { bedrooms: 3 } },
+  { label: "Luxury in LA",      icon: "✨", filters: { location: "Los Angeles", budget: 2000000 } },
+];</code></pre>
+  <p>Each chip has <strong>pre-computed filters</strong> &mdash; clicking calls <code>/search</code> directly, bypassing the LLM. This is <strong>progressive enhancement</strong>: the feature works even if the AI is down.</p>
+
+  <h2 id="app-state">Application State</h2>
+  <table>
+    <thead><tr><th>Variable</th><th>Type</th><th>Initial</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>messages</code></td><td>Array</td><td>[welcome msg]</td><td>Chat history <code>{role, content, id}</code></td></tr>
+      <tr><td><code>input</code></td><td>String</td><td><code>""</code></td><td>Current text in input box</td></tr>
+      <tr><td><code>properties</code></td><td>Array</td><td><code>[]</code></td><td>Currently displayed properties (may be filtered)</td></tr>
+      <tr><td><code>allProperties</code></td><td>Array</td><td><code>[]</code></td><td>ALL properties (never modified after load)</td></tr>
+      <tr><td><code>thinking</code></td><td>Boolean</td><td><code>false</code></td><td>Shows typing dots animation</td></tr>
+      <tr><td><code>loading</code></td><td>Boolean</td><td><code>false</code></td><td>Disables input + send button</td></tr>
+      <tr><td><code>resultLabel</code></td><td>String</td><td><code>"All Listings"</code></td><td>Toolbar text e.g. "New York &middot; 3+ bed"</td></tr>
+      <tr><td><code>compareIds</code></td><td>Array</td><td><code>[]</code></td><td>Selected property IDs e.g. <code>[1, 3]</code></td></tr>
+      <tr><td><code>compareData</code></td><td>Obj/null</td><td><code>null</code></td><td>API response from /compare (triggers modal)</td></tr>
+      <tr><td><code>comparing</code></td><td>Boolean</td><td><code>false</code></td><td>Loading state for compare API call</td></tr>
+      <tr><td><code>compareError</code></td><td>String</td><td><code>""</code></td><td>Error message in compare bar</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="fn-send">Function: sendMessage (Main Chat Flow)</h2>
+  <div class="flow-box">
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><p><strong>addMessage({ role: "user" })</strong></p><p>Shows user message in chat</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><p><strong>setLoading(true), setThinking(true)</strong></p><p>Input disables, typing dots appear</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><p><strong>POST /chat { message }</strong></p><p>Backend sends to Groq AI &rarr; returns <code>{ isSearch, location, budget, bedrooms, reply }</code></p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><p><strong>setThinking(false)</strong></p><p>Typing dots disappear</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><p><strong>If isSearch === true:</strong></p><p>POST /search with extracted filters &rarr; update property grid &rarr; show count in chat</p><p><strong>Else (general question):</strong></p><p>Reset to all properties &rarr; show AI reply in chat</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><p><strong>setLoading(false)</strong></p><p>Input re-enables, cursor refocuses</p></div></div>
+  </div>
+
+  <h2 id="fn-chip">Function: runChipSearch (Direct Search)</h2>
+  <div class="flow-box">
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><p>User clicks chip (e.g. "Homes in New York")</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><p><strong>POST /search { location: "New York" }</strong></p><p>Calls <code>/search</code> directly &mdash; <strong>SKIPS /chat entirely</strong> (no AI call)</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><p>Update property grid + show confirmation in chat</p></div></div>
+  </div>
+
+  <h2 id="fn-compare">Compare Flow</h2>
+  <div class="flow-box">
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><p>User clicks "+ Compare" on cards &rarr; <code>compareIds = [1, 3]</code></p><p>Floating bar appears: "2 properties selected"</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><p>User clicks "Compare 2" &rarr; <strong>POST /compare { ids: [1, 3] }</strong></p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><p><strong>setCompareData(response)</strong> &rarr; ComparisonModal renders with side-by-side table</p></div></div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><p>User clicks &times; or overlay &rarr; <code>setCompareData(null)</code> &rarr; modal disappears</p></div></div>
+  </div>
+
+  <p><strong>Keyboard handling:</strong></p>
+  <pre><code>const handleKeyDown = (e) =&gt; {
+  if (e.key === "Enter" &amp;&amp; !e.shiftKey) {
+    e.preventDefault();   // stop default newline insertion
+    sendMessage();
+  }
+};</code></pre>
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; preventDefault()</div>
+    <p>The default behavior of Enter in a <code>&lt;textarea&gt;</code> is to insert a newline. <code>preventDefault()</code> stops that so we can use Enter to send instead. <code>Shift+Enter</code> still inserts a newline because <code>!e.shiftKey</code> would be false.</p>
+  </div>
+
+  <h2 id="layout">JSX Layout Map</h2>
+  <div class="diagram">
+┌─────────────────────────────────────────────────────────────┐
+│ &lt;header&gt; SITE HEADER                                        │
+│  MiraAvatar │ AgentMira AI │ 10 Listings │ AI Powered │ Online│
+├─────────────────────────────────────────────────────────────┤
+│ &lt;div className="layout"&gt;  (flexbox row)                      │
+│                                                              │
+│ ┌─ &lt;aside&gt; CHAT PANEL ──┐  ┌─ &lt;main&gt; RESULTS PANEL ──────┐│
+│ │                        │  │                              ││
+│ │ Chat Header (Mira)     │  │ Toolbar: "All Listings"      ││
+│ │                        │  │          "10 properties"     ││
+│ │ ┌────────────────────┐ │  │          [Show All]          ││
+│ │ │ Messages Scroll    │ │  │                              ││
+│ │ │                    │ │  │ ┌──────┐ ┌──────┐ ┌──────┐  ││
+│ │ │ Mira: Hi! I'm...  │ │  │ │ Card │ │ Card │ │ Card │  ││
+│ │ │ User: homes in NY  │ │  │ │[+Cmp]│ │[+Cmp]│ │[+Cmp]│  ││
+│ │ │ Mira: Found 2...  │ │  │ └──────┘ └──────┘ └──────┘  ││
+│ │ │ [typing dots]      │ │  │                              ││
+│ │ └────────────────────┘ │  │ ┌──────┐ ┌──────┐ ...       ││
+│ │                        │  │ │ Card │ │ Card │            ││
+│ │ Chips:                 │  │ └──────┘ └──────┘            ││
+│ │ [🏙️ NY] [💰 500k]     │  │                              ││
+│ │ [🛏️ 3+] [✨ LA]       │  │ (or: Empty State 🏚️)       ││
+│ │                        │  │                              ││
+│ │ ┌────────────────────┐ │  │                              ││
+│ │ │ [textarea     ] [▶]│ │  │                              ││
+│ │ └────────────────────┘ │  │                              ││
+│ └────────────────────────┘  └──────────────────────────────┘│
+├─────────────────────────────────────────────────────────────┤
+│ FLOATING COMPARE BAR (when properties selected)              │
+│ ● 2 properties selected  [Clear] [Compare 2]                │
+├─────────────────────────────────────────────────────────────┤
+│ COMPARE MODAL (overlay when Compare clicked)                 │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Property Comparison                              [✕]    │ │
+│ │ ┌──────────────┬──────────────┐                        │ │
+│ │ │  [image]     │  [image]     │                        │ │
+│ │ │  Title 1     │  Title 2     │                        │ │
+│ │ ├──────────────┼──────────────┤                        │ │
+│ │ │ $450k        │ $380k LOWEST │                        │ │
+│ │ │ NY           │ Miami        │                        │ │
+│ │ │ 3 Bed MOST   │ 2 Bed        │                        │ │
+│ │ └──────────────┴──────────────┘                        │ │
+│ └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘</div>
+
+  <h2 id="css">CSS Architecture</h2>
+
+  <h3>CSS Custom Properties (Variables)</h3>
+  <pre><code>:root {
+  --bg:     #0C1628;
+  --teal:   #00CEC4;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+}
+/* Used as: */ background: var(--teal);</code></pre>
+  <p><code>:root</code> is the top-level element. Variables defined here are global &mdash; change the value once, it updates everywhere.</p>
+
+  <h3>Flexbox Layout</h3>
+  <pre><code>.layout { display: flex; }
+.chat-panel { width: 380px; flex-shrink: 0; }
+.results-panel { flex: 1; }  /* takes remaining space */</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Flexbox</div>
+    <p>Flexbox arranges children in a row or column. <code>flex: 1</code> means "grow to fill remaining space." <code>flex-shrink: 0</code> means "never shrink below my set width."</p>
+  </div>
+
+  <h3>CSS Grid (Property Cards)</h3>
+  <pre><code>.property-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}</code></pre>
+  <p><code>repeat(auto-fill, minmax(300px, 1fr))</code> = create as many columns as fit, each at least 300px wide, stretching equally. <strong>Responsive by default</strong> &mdash; no media queries needed.</p>
+
+  <h3>CSS Animations</h3>
+  <pre><code>@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.compare-bar { animation: slideUp 0.3s ease forwards; }</code></pre>
+
+  <div class="info-box theory">
+    <div class="info-label">Theory &mdash; Keyframes</div>
+    <p><code>@keyframes</code> defines an animation sequence. <code>slideUp</code> moves the element from 20px below + invisible &rarr; to its resting place + visible. <code>ease</code> = start slow, speed up, slow down. <code>forwards</code> = keep the final state after the animation ends.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- PART 5: DATA FLOW                                                    -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="part-divider">
+    <div class="part-label">Part 5</div>
+    <div class="part-title">Complete Data Flow</div>
+  </div>
+
+  <h2 id="data-flow">End-to-End Architecture</h2>
+
+  <div class="diagram">
+USER (Browser)               FRONTEND (React :3000)            BACKEND (Express :5000)         GROQ API
+     │                              │                                 │                            │
+     │  Opens localhost:3000        │                                 │                            │
+     │─────────────────────────────>│                                 │                            │
+     │                              │  GET /properties                │                            │
+     │                              │────────────────────────────────>│                            │
+     │                              │  [10 properties]                │                            │
+     │                              │<────────────────────────────────│                            │
+     │  Sees all 10 cards           │                                 │                            │
+     │<─────────────────────────────│                                 │                            │
+     │                              │                                 │                            │
+     │  Types "homes in NY"         │                                 │                            │
+     │─────────────────────────────>│                                 │                            │
+     │                              │  POST /chat {"homes in NY"}     │                            │
+     │                              │────────────────────────────────>│                            │
+     │                              │                                 │  POST /v1/chat/completions │
+     │                              │                                 │  {system:"You are Mira..." │
+     │                              │                                 │   user:"homes in NY"}      │
+     │                              │                                 │───────────────────────────>│
+     │                              │                                 │  {isSearch:true,           │
+     │                              │                                 │   location:"New York"}     │
+     │                              │                                 │<───────────────────────────│
+     │                              │  {isSearch:true, location:"NY"} │                            │
+     │                              │<────────────────────────────────│                            │
+     │                              │                                 │                            │
+     │                              │  POST /search {location:"NY"}   │                            │
+     │                              │────────────────────────────────>│                            │
+     │                              │  [2 matching properties]        │                            │
+     │                              │<────────────────────────────────│                            │
+     │  Sees 2 NY properties        │                                 │                            │
+     │<─────────────────────────────│                                 │                            │
+     │                              │                                 │                            │
+     │  Clicks chip "Under $500k"   │                                 │  (NO Groq call)            │
+     │─────────────────────────────>│                                 │                            │
+     │                              │  POST /search {budget:500000}   │                            │
+     │                              │────────────────────────────────>│                            │
+     │                              │  [4 properties]                 │                            │
+     │                              │<────────────────────────────────│                            │
+     │  Sees 4 properties           │                                 │                            │
+     │<─────────────────────────────│                                 │                            │
+     │                              │                                 │                            │
+     │  Selects cards 1,2           │                                 │                            │
+     │  Clicks "Compare 2"         │                                 │                            │
+     │─────────────────────────────>│                                 │                            │
+     │                              │  POST /compare {ids:[1,2]}      │                            │
+     │                              │────────────────────────────────>│                            │
+     │                              │  {properties:[], highlights:{}} │                            │
+     │                              │<────────────────────────────────│                            │
+     │  Sees comparison modal       │                                 │                            │
+     │<─────────────────────────────│                                 │                            │</div>
+
+</div><!-- .main -->
+</body>
+</html>
