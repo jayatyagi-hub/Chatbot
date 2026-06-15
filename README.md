@@ -84,7 +84,8 @@ npm start
 
 ## Screenshots
 
-Add screenshots of your chatbot UI here.
+![Home Page](screenshots/home.png)
+![Working Example](screenshots/bot.png)
 
 ## Future Enhancements
 
