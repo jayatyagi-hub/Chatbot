@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import "./App.css"; // same stylesheet — no changes needed
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 
 // ─── Mira Avatar ─────────────────────────────────────────────────────────────
 function MiraAvatar({ size = 36, pulse = false }) {
@@ -53,7 +53,7 @@ function MessageContent({ content }) {
 // ─── Property Card ─────────────────────────────────────────────────────────────
 const USD = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-function PropertyCard({ property, index, selected, onToggleCompare, disabled }) {
+function PropertyCard({ property, index, selected, onToggleCompare, disabled, saved, onToggleSave }) {
   const [imgErr, setImgErr] = useState(false);
 
   return (
@@ -79,6 +79,20 @@ function PropertyCard({ property, index, selected, onToggleCompare, disabled }) 
           />
           <span>{selected ? "✓ Added" : "+ Compare"}</span>
         </label>
+        <button
+          className={`save-btn ${saved ? "saved" : ""}`}
+          onClick={(e) => { e.stopPropagation(); onToggleSave(property.id); }}
+          title={saved ? "Remove from saved" : "Save property"}
+          aria-label={saved ? "Remove from saved" : "Save property"}
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            {saved ? (
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+            ) : (
+              <path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z" fill="currentColor"/>
+            )}
+          </svg>
+        </button>
       </div>
 
       <div className="property-body">
@@ -239,10 +253,23 @@ export default function App() {
   const [compareData, setCompareData] = useState(null);
   const [comparing, setComparing] = useState(false);
   const [compareError, setCompareError] = useState("");
+  const [savedIds, setSavedIds] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("savedProperties")) || []; }
+    catch { return []; }
+  });
+  const [showSaved, setShowSaved] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
   const MAX_COMPARE = 4;
+
+  const toggleSave = useCallback((id) => {
+    setSavedIds((prev) => {
+      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
+      localStorage.setItem("savedProperties", JSON.stringify(next));
+      return next;
+    });
+  }, []);
 
   const toggleCompare = useCallback((id) => {
     setCompareIds((prev) => {
@@ -265,7 +292,7 @@ export default function App() {
     setComparing(true);
     setCompareError("");
     try {
-      const res = await fetch(`${BACKEND_URL}/compare`, {
+      const res = await fetch(`${BACKEND_URL}/api/compare`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids: compareIds }),
@@ -285,7 +312,7 @@ export default function App() {
 
   // Load all on mount
   useEffect(() => {
-    fetch(`${BACKEND_URL}/properties`)
+    fetch(`${BACKEND_URL}/api/properties`)
       .then((r) => r.json())
       .then((data) => {
         setAllProperties(data);
@@ -313,7 +340,7 @@ export default function App() {
 
     try {
       // ── Call backend NLP engine (/chat) ─────────────────────────────────────
-      const aiRes = await fetch(`${BACKEND_URL}/chat`, {
+      const aiRes = await fetch(`${BACKEND_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: content }),
@@ -328,7 +355,7 @@ export default function App() {
 
       if (isSearch) {
         // ── Call backend search ───────────────────────────────────────────────
-        const searchRes = await fetch(`${BACKEND_URL}/search`, {
+        const searchRes = await fetch(`${BACKEND_URL}/api/search`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ location, budget, bedrooms }),
@@ -375,7 +402,7 @@ export default function App() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${BACKEND_URL}/search`, {
+      const res = await fetch(`${BACKEND_URL}/api/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ location, budget, bedrooms }),
@@ -433,6 +460,16 @@ export default function App() {
             <span className="stat-num">AI</span>
             <span className="stat-lbl">Powered</span>
           </div>
+          <button
+            className={`saved-header-btn ${showSaved ? "active" : ""}`}
+            onClick={() => setShowSaved(s => !s)}
+            title="View saved properties"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+            </svg>
+            {savedIds.length > 0 && <span className="saved-count-badge">{savedIds.length}</span>}
+          </button>
           <div className="online-badge">
             <span className="online-dot" />
             Mira is online
@@ -530,40 +567,69 @@ export default function App() {
         <main className="results-panel">
           <div className="results-toolbar">
             <div>
-              <h2 className="results-title">{resultLabel}</h2>
-              <p className="results-count">{properties.length} properties</p>
+              <h2 className="results-title">{showSaved ? "Saved Properties" : resultLabel}</h2>
+              <p className="results-count">
+                {showSaved
+                  ? `${savedIds.length} saved`
+                  : `${properties.length} properties`}
+              </p>
             </div>
-            <button
-              className="reset-btn"
-              onClick={() => {
-                setProperties(allProperties);
-                setResultLabel("All Listings");
-              }}
-            >
-              Show All
-            </button>
+            <div className="toolbar-actions">
+              <button
+                className={`saved-filter-btn ${showSaved ? "active" : ""}`}
+                onClick={() => setShowSaved(s => !s)}
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+                </svg>
+                {showSaved ? "Show All" : `Saved (${savedIds.length})`}
+              </button>
+              {!showSaved && (
+                <button
+                  className="reset-btn"
+                  onClick={() => {
+                    setProperties(allProperties);
+                    setResultLabel("All Listings");
+                  }}
+                >
+                  Show All
+                </button>
+              )}
+            </div>
           </div>
 
-          {properties.length > 0 ? (
-            <div className="property-grid">
-              {properties.map((p, i) => (
-                <PropertyCard
-                  key={p.id}
-                  property={p}
-                  index={i}
-                  selected={compareIds.includes(p.id)}
-                  onToggleCompare={toggleCompare}
-                  disabled={compareIds.length >= MAX_COMPARE}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <div className="empty-icon">🏚️</div>
-              <h3>No properties found</h3>
-              <p>Try asking Mira with different filters — a broader location, higher budget, or fewer bedrooms.</p>
-            </div>
-          )}
+          {(() => {
+            const displayList = showSaved
+              ? allProperties.filter(p => savedIds.includes(p.id))
+              : properties;
+
+            return displayList.length > 0 ? (
+              <div className="property-grid">
+                {displayList.map((p, i) => (
+                  <PropertyCard
+                    key={p.id}
+                    property={p}
+                    index={i}
+                    selected={compareIds.includes(p.id)}
+                    onToggleCompare={toggleCompare}
+                    disabled={compareIds.length >= MAX_COMPARE}
+                    saved={savedIds.includes(p.id)}
+                    onToggleSave={toggleSave}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <div className="empty-icon">{showSaved ? "💾" : "🏚️"}</div>
+                <h3>{showSaved ? "No saved properties yet" : "No properties found"}</h3>
+                <p>
+                  {showSaved
+                    ? "Click the heart icon on any property card to save it here."
+                    : "Try asking Mira with different filters — a broader location, higher budget, or fewer bedrooms."}
+                </p>
+              </div>
+            );
+          })()}
         </main>
       </div>
 

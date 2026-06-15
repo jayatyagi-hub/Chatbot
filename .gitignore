@@ -1,12 +1,4 @@
-.env
-.claude
-.vscode
-
 node_modules/
-**/node_modules/
-
-*.log
-logs/
-
-dist/
-build/
+.env
+frontend/build/
+.vercel/

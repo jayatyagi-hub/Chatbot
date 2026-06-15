@@ -101,7 +101,7 @@ app.get("/", (req, res) => {
 // =========================
 // ALL PROPERTIES
 // =========================
-app.get("/properties", (req, res) => {
+app.get("/api/properties", (req, res) => {
 
   console.log("Returning all properties");
 
@@ -112,7 +112,7 @@ app.get("/properties", (req, res) => {
 // =========================
 // SEARCH
 // =========================
-app.post("/search", (req, res) => {
+app.post("/api/search", (req, res) => {
 
   try {
 
@@ -162,7 +162,7 @@ app.post("/search", (req, res) => {
 // =========================
 // COMPARE PROPERTIES
 // =========================
-app.post("/compare", (req, res) => {
+app.post("/api/compare", (req, res) => {
 
   try {
 
@@ -237,7 +237,7 @@ app.post("/compare", (req, res) => {
 // =========================
 // GROQ CHAT
 // =========================
-app.post("/chat", async (req, res) => {
+app.post("/api/chat", async (req, res) => {
 
   try {
 
